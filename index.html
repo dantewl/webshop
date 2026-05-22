@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webshop</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Webshop Fake</h1>
+    <p class="subtitle">Cadastro, login e carrinho com Supabase.</p>
+
+    <section class="card" id="auth-section">
+      <h2>Entrar ou criar conta</h2>
+      <input type="email" id="email" placeholder="Seu e-mail" />
+      <input type="password" id="password" placeholder="Sua senha" />
+      <div class="buttons">
+        <button id="signup-btn">Criar conta</button>
+        <button id="login-btn">Entrar</button>
+      </div>
+      <p id="auth-message"></p>
+    </section>
+
+    <section class="card hidden" id="user-section">
+      <h2>Usuário logado</h2>
+      <p id="user-email"></p>
+      <button id="logout-btn">Sair</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
