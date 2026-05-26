@@ -402,6 +402,41 @@ const DEMO_PRODUCT_SEEDS = [
     description: "Minimal desk clock with a quiet sweep movement.",
     price: 36,
     image_url: "https://picsum.photos/seed/desk-clock/800/600"
+  },
+  {
+    key: "matcha-kit",
+    name: "Matcha Kit",
+    description: "A compact set for making calm, vibrant matcha at home.",
+    price: 64,
+    image_url: "https://picsum.photos/seed/matcha-kit/800/600"
+  },
+  {
+    key: "travel-mug",
+    name: "Travel Mug",
+    description: "Insulated mug that keeps drinks hot on the move.",
+    price: 32,
+    image_url: "https://picsum.photos/seed/travel-mug/800/600"
+  },
+  {
+    key: "desk-plant",
+    name: "Desk Plant",
+    description: "A low-maintenance plant to bring life to a workspace.",
+    price: 27,
+    image_url: "https://picsum.photos/seed/desk-plant/800/600"
+  },
+  {
+    key: "vinyl-player",
+    name: "Vinyl Player",
+    description: "A retro turntable with a clean wooden finish.",
+    price: 149,
+    image_url: "https://picsum.photos/seed/vinyl-player/800/600"
+  },
+  {
+    key: "weekend-bag",
+    name: "Weekend Bag",
+    description: "Soft travel bag with space for short trips and essentials.",
+    price: 88,
+    image_url: "https://picsum.photos/seed/weekend-bag/800/600"
   }
 ];
 
@@ -459,6 +494,51 @@ const PRODUCT_LOCALIZATION = {
       nl: "Minimalistische bureauklok met stil lopend uurwerk."
     },
     prices: { pt: 189.9, en: 36, nl: 33.9 }
+  },
+  "matcha-kit": {
+    names: { pt: "Kit de Matcha", en: "Matcha Kit", nl: "Matcha Set" },
+    descriptions: {
+      pt: "Kit compacto para preparar matcha em casa com calma.",
+      en: "A compact set for making calm, vibrant matcha at home.",
+      nl: "Een compacte set om thuis rustige, levendige matcha te maken."
+    },
+    prices: { pt: 329.9, en: 64, nl: 59.9 }
+  },
+  "travel-mug": {
+    names: { pt: "Copo Térmico", en: "Travel Mug", nl: "Reisbeker" },
+    descriptions: {
+      pt: "Copo térmico que mantém bebidas quentes na rotina.",
+      en: "Insulated mug that keeps drinks hot on the move.",
+      nl: "Geïsoleerde beker die dranken warm houdt onderweg."
+    },
+    prices: { pt: 159.9, en: 32, nl: 29.9 }
+  },
+  "desk-plant": {
+    names: { pt: "Planta de Mesa", en: "Desk Plant", nl: "Bureauplant" },
+    descriptions: {
+      pt: "Planta fácil de cuidar para trazer vida ao ambiente.",
+      en: "A low-maintenance plant to bring life to a workspace.",
+      nl: "Een onderhoudsarme plant die een werkplek tot leven brengt."
+    },
+    prices: { pt: 139.9, en: 27, nl: 24.9 }
+  },
+  "vinyl-player": {
+    names: { pt: "Toca-discos", en: "Vinyl Player", nl: "Platenspeler" },
+    descriptions: {
+      pt: "Toca-discos retrô com acabamento de madeira limpo.",
+      en: "A retro turntable with a clean wooden finish.",
+      nl: "Een retro platenspeler met een strakke houten afwerking."
+    },
+    prices: { pt: 769.9, en: 149, nl: 139.9 }
+  },
+  "weekend-bag": {
+    names: { pt: "Bolsa de Viagem", en: "Weekend Bag", nl: "Weekendtas" },
+    descriptions: {
+      pt: "Bolsa macia para viagens curtas e itens essenciais.",
+      en: "Soft travel bag with space for short trips and essentials.",
+      nl: "Zachte reistas met ruimte voor korte trips en essentials."
+    },
+    prices: { pt: 449.9, en: 88, nl: 79.9 }
   }
 };
 
@@ -1299,18 +1379,20 @@ async function handleSignup() {
 async function handleLogout() {
   if (!ensureSupabaseClient()) {
     showLoggedOutUI();
+    showToast(t("toast.sessionEnded"));
     return;
   }
 
-  const { error } = await supabaseClient.auth.signOut();
+  showLoggedOutUI();
+
+  const { error } = await supabaseClient.auth.signOut({ scope: "local" });
 
   if (error) {
-    showToast(t("toast.logoutError"), true);
+    showToast(t("toast.sessionEnded"));
     return;
   }
 
   showToast(t("toast.sessionEnded"));
-  showLoggedOutUI();
 }
 
 function bindEvents() {
@@ -1417,15 +1499,13 @@ async function bootstrap() {
     showLoggedOutUI();
   }
 
-  supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === "SIGNED_OUT") {
+  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+    if (!session?.user) {
       showLoggedOutUI();
       return;
     }
 
-    if (session?.user) {
-      await showLoggedInUI(session.user);
-    }
+    await showLoggedInUI(session.user);
   });
 }
 
